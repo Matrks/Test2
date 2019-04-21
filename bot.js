@@ -1,99 +1,38 @@
-const Discord  = require('discord.js');
-const hero     = new Discord.Client();
-const prefix   = "#";
-const category = "568928386949447688";
-const devs     = ["429335711267815424", ""];
-let mtickets   = true;
-let tchannels  = [];
-let current    = 0;
+const Discord = require('discord.js');
+const Canvas = require('canvas')
+const client = new Discord.Client();
+const prefix = 'z','Z';
+
+client.on('message', message => {                      
+    if(!message.channel.guild) return;
+       if(message.content.startsWith(prefix + 'active')) {
+        let modlog = client.channels.find('name', 'الـــــــــشات_العام');
+       if(!message.channel.guild) return message.channel.send('**هذا الأمر فقط للسيرفرات**').then(m => m.delete(5000));
+       message.channel.sendMessage(`اضغط على الصح عشان تتفعل`).then(msg => {
+       
+       
+        msg.react('✅')
+       .then(() => msg.react('✅'))
+     
+     
+ 
+       let activeFilter = (reaction, user) => reaction.emoji.name === '✅' && user.id === message.author.id;
+     
+       let active = msg.createReactionCollector(activeFilter, { time: 15000 });
+     
+                                                       
+                               active.on("collect", r => {
+                                   message.member.addRole(message.guild.roles.find("name", "active"));
+                                   message.member.removeRole(message.guild.roles.find("name", "not active"));
+                                   msg.delete();
+                                   message.channel.send(`**تم تفعيلك استمتع.**`).then(m => m.delete(1000));
+     
+                                   })
+                                   })
+                                   }});
 
 
-hero.on('ready',async () => console.log(`   - " ${hero.user.username} " , Tickety is ready to work.`));
-hero.on('message',async message => {
-    if(message.author.bot || message.channel.type === 'dm') return;
-    let args = message.content.split(" ");
-    let author = message.author.id;
-    if(args[0].toLowerCase() === `${prefix}help`) {
-            let embed = new Discord.RichEmbed()
-            .setAuthor(message.author.username, message.author.avatarURL)
-            .setThumbnail(message.author.avatarURL)
-            .setColor("#36393e")
-            .addField(`❯ لعمل تكت, \`${prefix}new\``, `» Syntax: \`${prefix}new [Reason]\`\n» Description: **لعمل روم فقط يظهر لك ولأدارة السيرفر.**`)
-            .addField(`❯ قائمة الأوامر, \`${prefix}help\``, `» Syntax: \`${prefix}help\`\n» Description: **يظهر لك جميع اوامر البوت.**`)
-            .addField(`❯ لإيقاف الأعضاء من عمل تكتات, \`${prefix}mtickets\``, `» Syntax: \`${prefix}mtickets [Disable/Enable]\`\n» Description: **لجعل جميع اعضاء السيرفر غير قادرون على عمل تكت.**`)  
-			.addField(`❯ لأقفال جميع التكتات المفتوحة, \`${prefix}deletetickets\``, `» Syntax: \`${prefix}deletetickets\`\n» Description: **لمسح جميع رومات التكتات المفتوحة في السيرفر**`)
-            .addField(`❯ لقفل التكت المفتوح, \`${prefix}close\``, `» Syntax: \`${prefix}close\`\n» Description: **لأقفال تكت.**\n\n  للمزيد من المعلومات توصل مع ادارة سيرفر دمووع وسيتم مساعدتك`)
-            await message.channel.send(`${emojis.yes}, **هذه قائمة بجميع اوامر البووت.**`);
-            await message.channel.send(embed);
-    } else if(args[0].toLowerCase() === `${prefix}new`) {
-        if(mtickets === false) return message.channel.send(`${emojis.wrong}, **تم ايقاف هذه الخاصية من قبل احد ادارة السيرفر**`);
-        if(!message.guild.me.hasPermission("MANAGE_CHANNELS")) return message.channel.send(`${emojis.wrong}, **البوت لا يملك صلاحيات لصنع الروم**`);
-		console.log(current);
-		let openReason = "";
-		current++;
-    	message.guild.createChannel(`dmo3tickets-${current}`, 'text').then(c => {
-		tchannels.push(c.id);
-		c.setParent(category);
-		message.channel.send(`${emojis.yes}, **تم عمل التكت.**`);
-		c.overwritePermissions(message.guild.id, {
-			READ_MESSAGES: false,
-			SEND_MESSAGES: false
-		});
-		c.overwritePermissions(message.author.id, {
-			READ_MESSAGES: true,
-			SEND_MESSAGES: true
-		});
-		
-		if(args[1]) openReason = `\nسبب فتح التكت , " **${args.slice(1).join(" ")}** "`;  
-		let embed = new Discord.RichEmbed()
-		.setAuthor(message.author.username, message.author.avatarURL)
-		.setColor("#36393e")
-		.setDescription(`**انتظر قليلا الى حين رد الادارة عليك**${openReason}`);
-		c.send(`${message.author}`);
-		c.send(embed);
-	});
-    } else if(args[0].toLowerCase() === `${prefix}mtickets`) {
-        if(!message.member.hasPermission("MANAGE_GUILD")) return message.channel.send(`${emojis.wrong}, **أنت لست من ادارة السيرفر لتنفيذ هذا الأمر.**`);
-		if(args[1] && args[1].toLowerCase() === "enable") {
-			mtickets = true;
-			message.channel.send(`${emojis.yes}, **تم تفعيل التكتات , الاَن يمكن لأعضاء السيرفر استخدام امر انشاء التكت**`);
-		} else if(args[1] && args[1].toLowerCase() === "disable") {
-			mtickets = false;
-			message.channel.send(`${emojis.yes}, **تم اغلاق نظام التكتات , الاَن لا يمكن لأي عضو استخدام هذا الأمر**`);
-		} else if(!args[1]) {
-			if(mtickets === true) {
-			mtickets = false;
-			message.channel.send(`${emojis.yes}, **تم اغلاق نظام التكتات , الاَن لا يمكن لأي عضو استخدام هذا الأمر**`);
-			} else if(mtickets === false) {
-			mtickets = true;
-			message.channel.send(`${emojis.yes}, **تم تفعيل التكتات , الاَن يمكن لأعضاء السيرفر استخدام امر انشاء التكت**`);
-			}
-		}
-    } else if(args[0].toLowerCase() === `${prefix}close`) {
-		if(!message.member.hasPermission("MANAGE_GUILD")) return message.channel.send(`${emojis.wrong}, **أنت لست من ادارة السيرفر لتنفيذ هذا الأمر.**`);
-		if(!message.channel.name.startsWith('ticket-') && !tchannels.includes(message.channel.id)) return message.channel.send(`${emojis.wrong}, **هذا الروم ليس من رومات التكت.**`);
-		
-		message.channel.send(`${emojis.yes}, **سيتم اغلاق الروم في 3 ثواني من الاَن.**`);
-		tchannels.splice( tchannels.indexOf(message.channel.id), 1 );
-		setTimeout(() => message.channel.delete(), 3000);
-	} else if(args[0].toLowerCase() === `${prefix}restart`) {
-		if(!devs.includes(message.author.id)) return message.channel.send(`${emojis.wrong}, **أنت لست من ادارة السيرفر لأستخدام هذا الأمر.**`);
-		message.channel.send(`${emojis.yes}, **جارى اعادة تشغيل البوت.**`);
-		hero.destroy();
-	} else if(args[0].toLowerCase() === `${prefix}deletetickets`) {
-		let iq = 0;
-		for(let q = 0; q < tchannels.length; q++) {
-			let c = message.guild.channels.get(tchannels[q]);
-			if(c) {
-				c.delete();
-				tchannels.splice( tchannels[q], 1 );
-				iq++;
-			}
-			if(q === tchannels.length - 1 || q === tchannels.lengh + 1) {
-				message.channel.send(`${emojis.yes}, **تم مسح \`${iq}\` من التكتات.**`);
-			}
-		}
-	}
-});
 
-hero.login(process.env.BOT_TOKEN);
+
+client.login(process.env.BOT_TOKEN);
+
