@@ -10,7 +10,6 @@ let current    = 0;
 
 hero.on('ready',async () => console.log(`   - " ${hero.user.username} " , Tickety is ready to work.`));
 hero.on('message',async message => {
-    const emojis   = { yes: `${hero.guilds.find(r => r.id === '550784255219728384').emojis.find(e => e.name === 'Yes')}`, wrong: `${hero.guilds.find(r => r.id === '550784255219728384').emojis.find(e => e.name === 'Wrong')}` };
     if(message.author.bot || message.channel.type === 'dm') return;
     let args = message.content.split(" ");
     let author = message.author.id;
